@@ -158,6 +158,154 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关系型数据库" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="2020/03/02/关系型数据库/" target="_blank" rel="noopener">关系型数据库</a>
+    </h1>
+  
+
+        
+        <a href="2020/03/02/关系型数据库/" target="_blank" rel="noopener" class="archive-article-date">
+  	<time datetime="2020-03-02T07:47:45.795Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>title:关系型数据库<br>date:2020-03-02 15:49:00</p>
+<hr>
+<p>##一、定义</p>
+<blockquote>
+<p>关系型数据库，是指采用了关系模型来组织数据的数据库，其以行和列的形式存储数据，以便于用户理解，关系型数据库这一系列的行和列被称为表，一组表组成了数据库。用户通过查询来检索数据库中的数据，而查询是一个用于限定数据库中某些区域的执行代码。关系模型可以简单理解为二维表格模型，而一个关系型数据库就是由二维表及其之间的关系组成的一个数据组织。<br>即最常见的表格模式，数据库的一些定义如下：</p>
+</blockquote>
+<ul>
+<li>超键(super key): 在关系中能唯一标识元组的属性集称为关系模式的超键</li>
+</ul>
+<ul>
+<li><p>候选键(candidate key): 不含有多余属性的超键称为候选键。也就是在候选键中，若再删除属性，就不是键了！</p>
+</li>
+<li><p>主键(primary key): 用户选作元组标识的一个候选键程序主键</p>
+</li>
+<li><p>外键(foreign key)：如果关系模式R中属性K是其它模式的主键，那么k在模式R中称为外键。<br>##二、范式<br>关系型数据库由表格模式组成，表格列项的选择对整个数据库的性能有巨大影响，所以出现了数据库范式来约束列项选择。</p>
+</li>
+<li><p>第一范式<br>第一范式为最基础的要求，即每个列项不可再分（每个列项都是单独的）。</p>
+</li>
+<li><p>第二范式<br>在第一范式的基础上，消除部分函数依赖，即缩减主键至没有多余项。</p>
+<blockquote>
+<p>部分函数依赖：设X,Y是关系R的两个属性集合，存在X→Y，若X’是X的真子集，存在X’→Y，则称Y部分函数依赖于X。</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>（学号，性别）-&gt;姓名，学号-&gt;姓名，此时第一个二元组中有多余项 ，且二元组的一部分能推出姓名，即姓名对该二元组部分依赖。</p>
+</blockquote>
+<ul>
+<li>第三范式<br>满足第二范式的条件下不存在传递函数依赖，即将可推出的内容放置另一张表上。<blockquote>
+<p>传递函数依赖：设X,Y,Z是关系R中互不相同的属性集合，存在X→Y(Y !→X),Y→Z，则称Z传递函数依赖于X。</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>学号-&gt;班级-&gt;班主任，班主任存在对学号的传递依赖。</p>
+</blockquote>
+<h2 id="三、索引"><a href="#三、索引" target="_blank" rel="noopener" class="headerlink" title="三、索引"></a>三、索引</h2><p>索引（Index）是帮助数据库高效获取数据的数据结构。索引是在基于数据库表创建的，它包含一个表中某些列的值以及记录对应的地址，并且把这些值存储在一个数据结构中。最常见的就是使用哈希表、B+树作为索引。</p>
+<p> <strong>索引数据结构的要求：</strong></p>
+<ul>
+<li>效率要高<br>数据库中的信息量往往非常巨大，操作也十分频繁，虽然查询操作远多于修改操作，但修改的次数也不可小觑。</li>
+<li>索引要小<br>索引是存在于磁盘中，当索引非常大的时候，达到几个G的时候，无法一次加载到内存中。</li>
+</ul>
+<ol>
+<li>链表</li>
+</ol>
+<ul>
+<li>我们知道链表的查询效率是O(n)。当数据量很大时这是很低效的。不符合高效要求。而我们知道</li>
+</ul>
+<p>2.数组</p>
+<ul>
+<li><p>数组+二分查找的效率是O(lgn)，但是数组的插入元素以及删除元素的效率很低，因此使用数组做为索引结构并不合适。</p>
+</li>
+<li><p>另外，在选择数据库索引的结构的时候，要考虑到另一个问题。索引是存在于磁盘中，当索引非常大的时候，达到几个G的时候，无法一次加载到内存中。</p>
+<p>考虑到上面两个因素，数据库中索引使用的是树形结构。一般选用B+树那为什么要选用B+树而不是B树、红黑树、平衡二叉树呢？</p>
+</li>
+</ul>
+<ol start="3">
+<li>平衡二叉树</li>
+</ol>
+<ul>
+<li>平衡树的查找时间复杂度是O(log2N)，查询效率十分优秀，但是索引是存在于索引文件中，是存在于磁盘中的。因为索引通常是很大的，因此无法一次将全部索引加载到内存当中，因此每次只能从磁盘中读取一个磁盘页的数据到内存中。而这个磁盘的读取的速度较内存中的读取速度而言是差了好几个级别。</li>
+</ul>
+<p>注意，我们说的平衡二叉树结构，指的是逻辑结构上的平衡二叉树，其物理实现是数组。然后由于在逻辑结构上相近的节点在物理结构上可能会差很远。因此，每次读取的磁盘页的数据中有许多是用不上的。因此，<strong>查找过程中要进行许多次的磁盘读取操作</strong>。</p>
+<p>而适合作为索引的结构应该是尽可能少的执行磁盘IO操作，因为执行磁盘IO操作非常的耗时。因此，平衡二叉树并不适合作为索引结构。<strong>同理，红黑树也不适合</strong>。<br>4.B树</p>
+<ul>
+<li><p>B树的每个节点可以存储多个关键字，它将节点大小设置为磁盘页的大小，<strong>充分利用了磁盘预读的功能</strong>。每次读取磁盘页时就会读取一整个节点。也正因每个节点存储着非常多个关键字，树的深度就会非常的小。进而要执行的磁盘读取操作次数就会非常少，更多的是在内存中对读取进来的数据进行查找。</p>
+</li>
+<li><p>B树的查询，主要发生在内存中，而平衡二叉树的查询，则是发生在磁盘读取中。因此，虽然B树查询查询的次数不比平衡二叉树的次数少，但是相比起磁盘IO速度，内存中比较的耗时就可以忽略不计了。因此，<strong>B树更适合作为索引</strong>。</p>
+</li>
+</ul>
+<ol start="5">
+<li>B+树</li>
+</ol>
+<ul>
+<li>前面说到B树已经是一个适合用于索引的数据结构了，但B+树相比B树，由于B+树所有数据放在叶子节点上且叶子节点之间有链表，相较于B树的中序遍历访问，B+树在实现连续区间访问时效率大大提高。所以B+树可以说是最适合外部存储数据的数据结构。</li>
+</ul>
+<p>参考资料：<a href="https://www.cnblogs.com/aspirant/p/9214485.html" target="_blank" rel="noopener">一步步分析为什么使用B+树</a><br>##四、数据库的锁</p>
+<ol>
+<li>乐观锁（预计不会或少发生冲突）<br>用数据版本（Version）记录机制实现，这是乐观锁最常用的一种实现方式。何谓数据版本？即为数据增加一个版本标识，一般是通过为数据库表增加一个数字类型的 “version” 字段来实现。当读取数据时，将version字段的值一同读出，数据每更新一次，对此version值加1。当我们提交更新的时候，判断数据库表对应记录的当前版本信息与第一次取出来的version值进行比对，如果数据库表当前版本号与第一次取出来的version值相等，则予以更新，否则认为是过期数据。</li>
+<li>悲观锁（预计冲突频发）<br>与乐观锁相对应的就是悲观锁了。悲观锁就是在操作数据时，认为此操作会出现数据冲突，所以在进行每次操作时都要通过获取锁才能进行对相同数据的操作，这点跟java中的synchronized很相似，所以悲观锁需要耗费较多的时间。另外与乐观锁相对应的，悲观锁是由数据库自己实现了的，要用的时候，我们直接调用数据库的相关语句就可以了。<em>要使用悲观锁，我们必须关闭mysql数据库的自动提交属性，因为MySQL默认使用autocommit模式，也就是说，当你执行一个更新操作后，MySQL会立刻将结果进行提交。</em></li>
+</ol>
+<ul>
+<li>排它锁（writer lock）<br>若事务 1 对数据对象A加上X锁，事务 1 可以读A也可以修改A，其他事务不能再对A加任何锁，直到事物 1 释放A上的锁。这保证了其他事务在事物 1 释放A上的锁之前不能再读取和修改A。排它锁会阻塞所有的排它锁和共享锁。<br>使用方式：<em>在需要执行的语句后面加上for update就可以了</em></li>
+<li>共享锁（read lock）<br>并发读，排斥写。<br>使用方法：<em>在查询语句后面增加 LOCK IN SHARE MODE</em><br>Mysql会对查询结果中的每行都加共享锁，当没有其他线程对查询结果集中的任何一行使用排他锁时，可以成功申请共享锁，否则会被阻塞。其他线程也可以读取使用了共享锁的表，而且这些线程读取的是同一个版本的数据。加上共享锁后，对于update,insert,delete语句会自动加排它锁。*<br>参考资料：<a href="https://blog.csdn.net/yzj5208/article/details/81288633" target="_blank" rel="noopener">数据库中锁的问题</a>                                                                                                                                                        </li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="2020/03/02/关系型数据库/" target="_blank" rel="noopener">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-MackDown语法写博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
