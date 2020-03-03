@@ -158,6 +158,246 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-redis内存淘汰策略" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener">redis内存淘汰策略</a>
+    </h1>
+  
+
+        
+        <a href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener" class="archive-article-date">
+  	<time datetime="2020-03-03T03:46:55.249Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<h2 id="title-redis缓存策略种种"><a href="#title-redis缓存策略种种" target="_blank" rel="noopener" class="headerlink" title="title:redis缓存策略种种"></a>title:redis缓存策略种种</h2><p><strong>一、内存淘汰策略</strong></p>
+<p>不同于之前的版本，redis5.0为我们提供了八个不同的内存置换策略。很早之前提供了6种。<br>（1）volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。</p>
+<p>（2）volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰。</p>
+<p>（3）volatile-random：从已设置过期时间的数据集中任意选择数据淘汰。</p>
+<p>（4）volatile-lfu：从已设置过期时间的数据集挑选使用频率最低的数据淘汰。</p>
+<p>（5）allkeys-lru：从数据集中挑选最近最少使用的数据淘汰</p>
+<p>（6）allkeys-lfu：从数据集中挑选使用频率最低的数据淘汰。</p>
+<p>（7）allkeys-random：从数据集（server.db[i].dict）中任意选择数据淘汰</p>
+<p>（8） no-enviction（驱逐）：禁止驱逐数据，这也是默认策略。意思是当内存不足以容纳新入数据时，新写入操作就会报错，请求可以继续进行，线上任务也不能持续进行，采用no-enviction策略可以保证数据不被丢失。</p>
+<p>这八种大体上可以分为4中，lru、lfu、random、ttl。</p>
+<p><strong>二、淘汰机制的实现</strong></p>
+<ol>
+<li>删除失效主键</li>
+</ol>
+<p>既然是淘汰，那就需要把这些数据给删除，然后保存新的。Redis 删除失效主键的方法主要有两种：</p>
+<p>（1）消极方法（passive way），在主键被访问时如果发现它已经失效，那么就删除它。redis在实现GET、MGET、HGET、LRANGE等所有涉及到读取数据的命令时都会调用 expireIfNeeded，它存在的意义就是在读取数据之前先检查一下它有没有失效，如果失效了就删除它。</p>
+<p>expireIfNeeded函数中调用的另外一个函数propagateExpire，这个函数用来在正式删除失效主键，并且广播告诉其他地方，目的地有俩：AOF文件，将删除失效主键的这一操作以DEL Key的标准命令格式记录下来；另一个就是发送到当前Redis服务器的所有Slave，同样将删除失效主键的这一操作以DEL Key的标准命令格式告知这些Slave删除各自的失效主键。</p>
+<p>（2）积极方法（active way），周期性地探测，发现失效就删除。消极方法的缺点是，如果key 迟迟不被访问，就会占用很多内存空间，所以才有积极方式。</p>
+<p>（3）主动删除：当内存超过maxmemory限定时，触发主动清理策略，该策略由启动参数的配置决定</p>
+<p>主键具体的失效时间全部都维护在expires这个字典表中：</p>
+<ol start="2">
+<li>淘汰数据的量</li>
+</ol>
+<p>既然是淘汰数据，那么淘汰多少合适呢？</p>
+<p>为了避免频繁的触发淘汰策略，每次会淘汰掉一批数据，淘汰的数据的大小其实是和置换的大小来确定的，如果置换的数据量大，淘汰的肯定也多。</p>
+<ol start="3">
+<li>置换策略是如何工作</li>
+</ol>
+<p>理解置换策略的执行方式是非常重要的，比如：</p>
+<p>（1）客户端执行一条新命令，导致数据库需要增加数据（比如set key value）</p>
+<p>（2）Redis会检查内存使用，如果内存使用超过maxmemory，就会按照置换策略删除一些key</p>
+<p>（3）新的命令执行成功</p>
+<p><strong>三、 Redis 提供两种持久化机制 RDB 和 AOF 机制:</strong></p>
+<ol>
+<li><strong>RDB(Redis DataBase)持久化方式：</strong><br>是指用数据集快照的方式(半持久化模式)记录 redis 数据库的所有键值对, 在某个时间点将数据写入一个临时文件，持久化结束后，用这个临时文件替换上次持久化的文件，达到数据恢复。</li>
+</ol>
+<p><strong>优点：</strong></p>
+<ul>
+<li>只有一个文件 dump.rdb，方便持久化。</li>
+<li>容灾性好，一个文件可以保存到安全的磁盘。</li>
+<li>使用单独子进程来进行持久化，主进程不会进行任何 IO 操作，保证了 redis 的高性能</li>
+<li>相对于数据集大时，比 AOF 的启动效率更高。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>数据安全性低。(RDB 是间隔一段时间进行持久化，如果持久化之间 redis 发生故障，会发生数据丢失。所以这种方式更适合数据要求不严谨的时候)</li>
+</ul>
+<p><strong>AOF(Append-only file)持久化方式：</strong><br> 是指所有的命令行记录以 redis 命令请求协议的格式(完全持久化存储)保存为 aof 文件。<br><strong>优点：</strong></p>
+<ul>
+<li>数据安全，aof 持久化可以配置 appendfsync 属性，有 always，每进行一次命令操作就记录到 aof 文件中一次。</li>
+<li>通过 append 模式写文件，即使中途服务器宕机，可以通过 redis-check-aof 工具解决数据一致性问题。</li>
+<li>AOF 机制的 rewrite 模式。(AOF 文件没被 rewrite 之前（文件过大时会对命令进行合并重写），可以删除其中的某些命令（比如误操作的 flushall）)</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>AOF 文件比 RDB 文件大，且恢复速度慢。</li>
+<li>数据集大的时候，比 rdb 启动效率低。</li>
+</ul>
+<p>RDB 模式是 redis 的默认持久化方案，redis.conf 中可以配置 rdb 生成快照的阙值，默认 15 分钟 1 次，5 分钟10 次，1 分钟 10000 次 生成快照。而 AOF 需要修改配置文件开启，将 redis.conf 中的 appendonly 设置为 yes，即可开启 aof 日志，还可设置持久化文件存储的目录及文件名称。</p>
+<p><strong>四、缓存击穿、缓存雪崩</strong></p>
+<ol>
+<li>什么是缓存穿透：<br>从字面上理解，缓存穿透就是运行程序击穿了你的 Redis 缓存服务器，去访问 MySQL 数据库；<br>由于 Redis 存在一定的命中概率，进来的请求发现 Redis 中并没有相关数据或者是没有命中指定数据，会去数据<br>库查询。</li>
+<li>缓存穿透有什么危害：<br>如果大量请求进来，直接去访问数据库服务查询，数据库服务器 CPU 短时间内会超负载运行，致使数据库服务宕<br>机。</li>
+</ol>
+<p>解决方案：<br>方案 1、使用互斥锁排队<br>业界比价普遍的一种做法，即根据 key 获取 value 值为空时，锁上，从数据库中 load 数据后再释放锁。若其它线<br>程获取锁失败，则等待一段时间后重试。这里要注意，分布式环境中要使用分布式锁，单机的话用普通的锁（synchronized、Lock）就够了。这样做思路比较清晰，也从一定程度上减轻数据库压力，但是锁机制使得逻辑的复杂度增加，吞吐量也降低了，有点治标不治本。</p>
+<p>方案 2、接口限流与熔断、降级<br>重要的接口一定要做好限流策略，防止用户恶意刷接口，同时要降级准备，当接口中的某些服务不可用时候，进行熔断，失败快速返回机制。<br>方案 3、布隆过滤器<br>bloomfilter 就类似于一个 hash set，用于快速判某个元素是否存在于集合中，其典型的应用场景就是快速判断<br>一个 key 是否存在于某容器，不存在就直接返回。布隆过滤器的关键就在于 hash 算法和容器大小。<br>3. 缓存雪崩<br>什么是缓存雪崩： 缓存在同一时间内大量键过期（失效），接着来一大波请求瞬间都落在了数据库中导致连接异常。<br>解决方案：<br>方案 1、也是像解决缓存穿透一样加锁排队;<br>方案 2、建立备份缓存，缓存 A 和缓存 B，A 设置超时时间，B 不设值超时时间，先从 A 读缓存，A 没有读 B，并且更新 A 缓存和 B 缓存;<br>方案 3、设置缓存超时时间的时候加上一个随机的时间长度，比如这个缓存 key 的超时时间是固定的 5 分钟加上随机的 2 分钟，就可从一定程度上避免雪崩问题；</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-redis中zset底层实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener">redis中zset底层实现</a>
+    </h1>
+  
+
+        
+        <a href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener" class="archive-article-date">
+  	<time datetime="2020-03-03T02:39:12.879Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<h2 id="title-zset底层实现（跳表）"><a href="#title-zset底层实现（跳表）" target="_blank" rel="noopener" class="headerlink" title="title:zset底层实现（跳表）"></a>title:zset底层实现（跳表）</h2><p><a href="https://blog.csdn.net/weixin_38008100/article/details/94629753" target="_blank" rel="noopener">资料链接</a></p>
+<h3 id="skiplist介绍"><a href="#skiplist介绍" target="_blank" rel="noopener" class="headerlink" title="skiplist介绍"></a><strong>skiplist介绍</strong></h3><p>跳表(skip List)是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)。简单说来跳表也是链表的一种，只不过它在链表的基础上增加了跳跃功能，正是这个跳跃的功能，使得在查找元素时，跳表能够提供O(logN)的时间复杂度。</p>
+<p>先来看一个有序链表，如下图（最左侧的灰色节点表示一个空的头结点）：</p>
+<p><a href="http://zhangtielei.com/assets/photos_redis/skiplist/sorted_linked_list.png" target="_blank" rel="noopener"><img src="https://upload-images.jianshu.io/upload_images/21762337-b59c74ff5ca3bf56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="有序链表结构图"></a> </p>
+<p>在这样一个链表中，如果我们要查找某个数据，那么需要从头开始逐个进行比较，直到找到包含数据的那个节点，或者找到第一个比给定数据大的节点为止（没找到）。也就是说，时间复杂度为O(n)。同样，当我们要插入新数据的时候，也要经历同样的查找过程，从而确定插入位置。</p>
+<p>假如我们每相邻两个节点增加一个指针，让指针指向下下个节点，如下图：</p>
+<p><a href="http://zhangtielei.com/assets/photos_redis/skiplist/skip2node_linked_list.png" target="_blank" rel="noopener"><img src="https://upload-images.jianshu.io/upload_images/21762337-ea6e201a34458643.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="每两个节点增加一个跳跃指针的有序链表"></a> </p>
+<p>这样所有新增加的指针连成了一个新的链表，但它包含的节点个数只有原来的一半（上图中是7, 19, 26）。现在当我们想查找数据的时候，可以先沿着这个新链表进行查找。当碰到比待查数据大的节点时，再回到原来的链表中进行查找。比如，我们想查找23，查找的路径是沿着下图中标红的指针所指向的方向进行的：</p>
+<p><a href="http://zhangtielei.com/assets/photos_redis/skiplist/search_path_on_skip2node_list.png" target="_blank" rel="noopener"><img src="https://upload-images.jianshu.io/upload_images/21762337-561face8ee4a8f0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="一个搜索路径的例子"></a> </p>
+<ul>
+<li>23首先和7比较，再和19比较，比它们都大，继续向后比较。</li>
+<li>但23和26比较的时候，比26要小，因此回到下面的链表（原链表），与22比较。</li>
+<li>23比22要大，沿下面的指针继续向后和26比较。23比26小，说明待查数据23在原链表中不存在，而且它的插入位置应该在22和26之间。</li>
+</ul>
+<p>在这个查找过程中，由于新增加的指针，我们不再需要与链表中每个节点逐个进行比较了。需要比较的节点数大概只有原来的一半。</p>
+<p>利用同样的方式，我们可以在上层新产生的链表上，继续为每相邻的两个节点增加一个指针，从而产生第三层链表。如下图：</p>
+<p><a href="http://zhangtielei.com/assets/photos_redis/skiplist/skip2node_level3_linked_list.png" target="_blank" rel="noopener"><img src="https://upload-images.jianshu.io/upload_images/21762337-3b82435da02884f6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="两层跳跃指针"></a> </p>
+<p>在这个新的三层链表结构上，如果我们还是查找23，那么沿着最上层链表首先要比较的是19，发现23比19大，接下来我们就知道只需要到19的后面去继续查找，从而一下子跳过了19前面的所有节点。可以想象，当链表足够长的时候，这种多层链表的查找方式能让我们跳过很多下层节点，大大加快查找的速度。</p>
+<p><code>skiplist</code>正是受这种多层链表的想法的启发而设计出来的。实际上，按照上面生成链表的方式，上面每一层链表的节点个数，是下面一层的节点个数的一半，这样查找过程就非常类似于一个二分查找，使得查找的时间复杂度可以降低到O(log n)。但是，这种方法在插入数据的时候有很大的问题。新插入一个节点之后，就会打乱上下相邻两层链表上节点个数严格的2:1的对应关系。如果要维持这种对应关系，就必须把新插入的节点后面的所有节点（也包括新插入的节点）重新进行调整，这会让时间复杂度重新蜕化成O(n)。删除数据也有同样的问题。</p>
+<p>skiplist为了避免这一问题，它不要求上下相邻两层链表之间的节点个数有严格的对应关系，而是为每个节点随机出一个层数(level)。比如，一个节点随机出的层数是3，那么就把它链入到第1层到第3层这三层链表中。为了表达清楚，下图展示了如何通过一步步的插入操作从而形成一个skiplist的过程：</p>
+<p><a href="http://zhangtielei.com/assets/photos_redis/skiplist/skiplist_insertions.png" target="_blank" rel="noopener"><img src="https://upload-images.jianshu.io/upload_images/21762337-6b9600127d33542b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="skiplist插入形成过程"></a> </p>
+<p>从上面skiplist的创建和插入过程可以看出，每一个节点的层数（level）是随机出来的，而且新插入一个节点不会影响其它节点的层数。因此，插入操作只需要修改插入节点前后的指针，而不需要对很多节点都进行调整。这就降低了插入操作的复杂度。实际上，这是skiplist的一个很重要的特性，这让它在插入性能上明显优于平衡树的方案。这在后面我们还会提到。</p>
+<p>skiplist，指的就是除了最下面第1层链表之外，它会产生若干层稀疏的链表，这些链表里面的指针故意跳过了一些节点（而且越高层的链表跳过的节点越多）。这就使得我们在查找数据的时候能够先在高层的链表中进行查找，然后逐层降低，最终降到第1层链表来精确地确定数据位置。在这个过程中，我们跳过了一些节点，从而也就加快了查找速度。</p>
+<p>刚刚创建的这个skiplist总共包含4层链表，现在假设我们在它里面依然查找23，下图给出了查找路径：</p>
+<p><a href="http://zhangtielei.com/assets/photos_redis/skiplist/search_path_on_skiplist.png" target="_blank" rel="noopener"><img src="https://upload-images.jianshu.io/upload_images/21762337-6d3a0860a3093833.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="skiplist上的查找路径展示"></a> </p>
+<p>需要注意的是，前面演示的各个节点的插入过程，实际上在插入之前也要先经历一个类似的查找过程，在确定插入位置后，再完成插入操作。</p>
+<p>实际应用中的skiplist每个节点应该包含key和value两部分。前面的描述中我们没有具体区分key和value，但实际上列表中是按照key(score)进行排序的，查找过程也是根据key在比较。</p>
+<p>执行插入操作时计算随机数的过程，是一个很关键的过程，它对skiplist的统计特性有着很重要的影响。这并不是一个普通的服从均匀分布的随机数，它的计算过程如下：</p>
+<ul>
+<li>首先，每个节点肯定都有第1层指针（每个节点都在第1层链表里）。</li>
+<li>如果一个节点有第i层(i&gt;=1)指针（即节点已经在第1层到第i层链表中），那么它有第(i+1)层指针的概率为p。</li>
+<li>节点最大的层数不允许超过一个最大值，记为MaxLevel。</li>
+</ul>
+<p>这个计算随机层数的伪码如下所示：</p>
+<blockquote>
+<p>randomLevel()<br>   level := 1<br>   // random()返回一个[0…1)的随机数<br>   while random() &lt; p and level &lt; MaxLevel do<br>   level := level + 1<br>   return level’</p>
+</blockquote>
+<p>randomLevel()的伪码中包含两个参数，一个是p，一个是MaxLevel。在Redis的skiplist实现中，这两个参数的取值为：<br>  p = 1/4                      MaxLevel = 32</p>
+<h3 id="skiplist与平衡树、哈希表的比较"><a href="#skiplist与平衡树、哈希表的比较" target="_blank" rel="noopener" class="headerlink" title="skiplist与平衡树、哈希表的比较"></a>skiplist与平衡树、哈希表的比较</h3><ul>
+<li>skiplist和各种平衡树（如AVL、红黑树等）的元素是有序排列的，而哈希表不是有序的。因此，在哈希表上只能做单个key的查找，不适宜做范围查找。所谓范围查找，指的是查找那些大小在指定的两个值之间的所有节点。</li>
+<li>在做范围查找的时候，平衡树比skiplist操作要复杂。在平衡树上，我们找到指定范围的小值之后，还需要以中序遍历的顺序继续寻找其它不超过大值的节点。如果不对平衡树进行一定的改造，这里的中序遍历并不容易实现。而在skiplist上进行范围查找就非常简单，只需要在找到小值之后，对第1层链表进行若干步的遍历就可以实现。</li>
+<li>平衡树的插入和删除操作可能引发子树的调整，逻辑复杂，而skiplist的插入和删除只需要修改相邻节点的指针，操作简单又快速。</li>
+<li>从内存占用上来说，skiplist比平衡树更灵活一些。一般来说，平衡树每个节点包含2个指针（分别指向左右子树），而skiplist每个节点包含的指针数目平均为1/(1-p)，具体取决于参数p的大小。如果像Redis里的实现一样，取p=1/4，那么平均每个节点包含1.33个指针，比平衡树更有优势。</li>
+<li>查找单个key，skiplist和平衡树的时间复杂度都为O(log n)，大体相当；而哈希表在保持较低的哈希值冲突概率的前提下，查找时间复杂度接近O(1)，性能更高一些。所以我们平常使用的各种Map或dictionary结构，大都是基于哈希表实现的。</li>
+<li>从算法实现难度上来比较，skiplist比平衡树要简单得多。</li>
+<li><em>Redis中的skiplist跟前面介绍的经典的skiplist相比，有如下不同*</em>：</li>
+</ul>
+<p>分数(score)允许重复，即skiplist的key允许重复。这在经典skiplist中是不允许的。<br>在比较时，不仅比较分数（相当于skiplist的key），还比较数据本身。在Redis的skiplist实现中，数据本身的内容唯一标识这份数据，而不是由key来唯一标识。另外，当多个元素分数(key)相同的时候，还需要根据数据内容来进字典排序。<br>第1层链表不是一个单向链表，而是一个双向链表。这是为了方便以倒序方式获取一个范围内的元素。<br>在skiplist中可以很方便地计算出每个元素的排名(rank)。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关系型数据库" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     

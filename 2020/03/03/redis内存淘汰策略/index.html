@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//CGMgo">
-  <title>Archives | 城管懋的博客</title>
+  <title>redis内存淘汰策略 | 城管懋的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="马上毕业，居家隔离">
-<meta property="og:type" content="website">
-<meta property="og:title" content="城管懋的博客">
-<meta property="og:url" content="archives/index.html">
+  <meta name="description" content="title:redis缓存策略种种一、内存淘汰策略 不同于之前的版本，redis5.0为我们提供了八个不同的内存置换策略。很早之前提供了6种。（1）volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。 （2）volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰。 （3）volatile-random：从已设置过期时间的数据集中任意选择数据淘汰。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis内存淘汰策略">
+<meta property="og:url" content="2020/03/03/redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5/index.html">
 <meta property="og:site_name" content="城管懋的博客">
-<meta property="og:description" content="马上毕业，居家隔离">
+<meta property="og:description" content="title:redis缓存策略种种一、内存淘汰策略 不同于之前的版本，redis5.0为我们提供了八个不同的内存置换策略。很早之前提供了6种。（1）volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。 （2）volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰。 （3）volatile-random：从已设置过期时间的数据集中任意选择数据淘汰。">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-03T03:46:55.249Z">
+<meta property="article:modified_time" content="2020-03-03T03:48:13.902Z">
 <meta property="article:author" content="城管懋">
 <meta name="twitter:card" content="summary">
   
@@ -156,195 +158,222 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-redis内存淘汰策略" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      redis内存淘汰策略
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="archives/2020" target="_blank" rel="noopener" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener" class="archive-article-date">
+
+        
+        <a href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener" class="archive-article-date">
   	<time datetime="2020-03-03T03:46:55.249Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener">redis内存淘汰策略</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<h2 id="title-redis缓存策略种种"><a href="#title-redis缓存策略种种" target="_blank" rel="noopener" class="headerlink" title="title:redis缓存策略种种"></a>title:redis缓存策略种种</h2><p><strong>一、内存淘汰策略</strong></p>
+<p>不同于之前的版本，redis5.0为我们提供了八个不同的内存置换策略。很早之前提供了6种。<br>（1）volatile-lru：从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。</p>
+<p>（2）volatile-ttl：从已设置过期时间的数据集中挑选将要过期的数据淘汰。</p>
+<p>（3）volatile-random：从已设置过期时间的数据集中任意选择数据淘汰。</p>
+<p>（4）volatile-lfu：从已设置过期时间的数据集挑选使用频率最低的数据淘汰。</p>
+<p>（5）allkeys-lru：从数据集中挑选最近最少使用的数据淘汰</p>
+<p>（6）allkeys-lfu：从数据集中挑选使用频率最低的数据淘汰。</p>
+<p>（7）allkeys-random：从数据集（server.db[i].dict）中任意选择数据淘汰</p>
+<p>（8） no-enviction（驱逐）：禁止驱逐数据，这也是默认策略。意思是当内存不足以容纳新入数据时，新写入操作就会报错，请求可以继续进行，线上任务也不能持续进行，采用no-enviction策略可以保证数据不被丢失。</p>
+<p>这八种大体上可以分为4中，lru、lfu、random、ttl。</p>
+<p><strong>二、淘汰机制的实现</strong></p>
+<ol>
+<li>删除失效主键</li>
+</ol>
+<p>既然是淘汰，那就需要把这些数据给删除，然后保存新的。Redis 删除失效主键的方法主要有两种：</p>
+<p>（1）消极方法（passive way），在主键被访问时如果发现它已经失效，那么就删除它。redis在实现GET、MGET、HGET、LRANGE等所有涉及到读取数据的命令时都会调用 expireIfNeeded，它存在的意义就是在读取数据之前先检查一下它有没有失效，如果失效了就删除它。</p>
+<p>expireIfNeeded函数中调用的另外一个函数propagateExpire，这个函数用来在正式删除失效主键，并且广播告诉其他地方，目的地有俩：AOF文件，将删除失效主键的这一操作以DEL Key的标准命令格式记录下来；另一个就是发送到当前Redis服务器的所有Slave，同样将删除失效主键的这一操作以DEL Key的标准命令格式告知这些Slave删除各自的失效主键。</p>
+<p>（2）积极方法（active way），周期性地探测，发现失效就删除。消极方法的缺点是，如果key 迟迟不被访问，就会占用很多内存空间，所以才有积极方式。</p>
+<p>（3）主动删除：当内存超过maxmemory限定时，触发主动清理策略，该策略由启动参数的配置决定</p>
+<p>主键具体的失效时间全部都维护在expires这个字典表中：</p>
+<ol start="2">
+<li>淘汰数据的量</li>
+</ol>
+<p>既然是淘汰数据，那么淘汰多少合适呢？</p>
+<p>为了避免频繁的触发淘汰策略，每次会淘汰掉一批数据，淘汰的数据的大小其实是和置换的大小来确定的，如果置换的数据量大，淘汰的肯定也多。</p>
+<ol start="3">
+<li>置换策略是如何工作</li>
+</ol>
+<p>理解置换策略的执行方式是非常重要的，比如：</p>
+<p>（1）客户端执行一条新命令，导致数据库需要增加数据（比如set key value）</p>
+<p>（2）Redis会检查内存使用，如果内存使用超过maxmemory，就会按照置换策略删除一些key</p>
+<p>（3）新的命令执行成功</p>
+<p><strong>三、 Redis 提供两种持久化机制 RDB 和 AOF 机制:</strong></p>
+<ol>
+<li><strong>RDB(Redis DataBase)持久化方式：</strong><br>是指用数据集快照的方式(半持久化模式)记录 redis 数据库的所有键值对, 在某个时间点将数据写入一个临时文件，持久化结束后，用这个临时文件替换上次持久化的文件，达到数据恢复。</li>
+</ol>
+<p><strong>优点：</strong></p>
+<ul>
+<li>只有一个文件 dump.rdb，方便持久化。</li>
+<li>容灾性好，一个文件可以保存到安全的磁盘。</li>
+<li>使用单独子进程来进行持久化，主进程不会进行任何 IO 操作，保证了 redis 的高性能</li>
+<li>相对于数据集大时，比 AOF 的启动效率更高。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>数据安全性低。(RDB 是间隔一段时间进行持久化，如果持久化之间 redis 发生故障，会发生数据丢失。所以这种方式更适合数据要求不严谨的时候)</li>
+</ul>
+<p><strong>AOF(Append-only file)持久化方式：</strong><br> 是指所有的命令行记录以 redis 命令请求协议的格式(完全持久化存储)保存为 aof 文件。<br><strong>优点：</strong></p>
+<ul>
+<li>数据安全，aof 持久化可以配置 appendfsync 属性，有 always，每进行一次命令操作就记录到 aof 文件中一次。</li>
+<li>通过 append 模式写文件，即使中途服务器宕机，可以通过 redis-check-aof 工具解决数据一致性问题。</li>
+<li>AOF 机制的 rewrite 模式。(AOF 文件没被 rewrite 之前（文件过大时会对命令进行合并重写），可以删除其中的某些命令（比如误操作的 flushall）)</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>AOF 文件比 RDB 文件大，且恢复速度慢。</li>
+<li>数据集大的时候，比 rdb 启动效率低。</li>
+</ul>
+<p>RDB 模式是 redis 的默认持久化方案，redis.conf 中可以配置 rdb 生成快照的阙值，默认 15 分钟 1 次，5 分钟10 次，1 分钟 10000 次 生成快照。而 AOF 需要修改配置文件开启，将 redis.conf 中的 appendonly 设置为 yes，即可开启 aof 日志，还可设置持久化文件存储的目录及文件名称。</p>
+<p><strong>四、缓存击穿、缓存雪崩</strong></p>
+<ol>
+<li>什么是缓存穿透：<br>从字面上理解，缓存穿透就是运行程序击穿了你的 Redis 缓存服务器，去访问 MySQL 数据库；<br>由于 Redis 存在一定的命中概率，进来的请求发现 Redis 中并没有相关数据或者是没有命中指定数据，会去数据<br>库查询。</li>
+<li>缓存穿透有什么危害：<br>如果大量请求进来，直接去访问数据库服务查询，数据库服务器 CPU 短时间内会超负载运行，致使数据库服务宕<br>机。</li>
+</ol>
+<p>解决方案：<br>方案 1、使用互斥锁排队<br>业界比价普遍的一种做法，即根据 key 获取 value 值为空时，锁上，从数据库中 load 数据后再释放锁。若其它线<br>程获取锁失败，则等待一段时间后重试。这里要注意，分布式环境中要使用分布式锁，单机的话用普通的锁（synchronized、Lock）就够了。这样做思路比较清晰，也从一定程度上减轻数据库压力，但是锁机制使得逻辑的复杂度增加，吞吐量也降低了，有点治标不治本。</p>
+<p>方案 2、接口限流与熔断、降级<br>重要的接口一定要做好限流策略，防止用户恶意刷接口，同时要降级准备，当接口中的某些服务不可用时候，进行熔断，失败快速返回机制。<br>方案 3、布隆过滤器<br>bloomfilter 就类似于一个 hash set，用于快速判某个元素是否存在于集合中，其典型的应用场景就是快速判断<br>一个 key 是否存在于某容器，不存在就直接返回。布隆过滤器的关键就在于 hash 算法和容器大小。<br>3. 缓存雪崩<br>什么是缓存雪崩： 缓存在同一时间内大量键过期（失效），接着来一大波请求瞬间都落在了数据库中导致连接异常。<br>解决方案：<br>方案 1、也是像解决缓存穿透一样加锁排队;<br>方案 2、建立备份缓存，缓存 A 和缓存 B，A 设置超时时间，B 不设值超时时间，先从 A 读缓存，A 没有读 B，并且更新 A 缓存和 B 缓存;<br>方案 3、设置缓存超时时间的时候加上一个随机的时间长度，比如这个缓存 key 的超时时间是固定的 5 分钟加上随机的 2 分钟，就可从一定程度上避免雪崩问题；</p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http:2020/03/03/redis内存淘汰策略/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-03T02:39:12.879Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">redis中zset底层实现</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener">redis中zset底层实现</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/02/关系型数据库/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-02T07:47:45.795Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/02/关系型数据库/" target="_blank" rel="noopener">关系型数据库</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/MackDown语法写博客/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T13:48:24.502Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/MackDown语法写博客/" target="_blank" rel="noopener">MackDown语法写博客</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/我的第一篇博客/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T04:47:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/我的第一篇博客/" target="_blank" rel="noopener">我的第一篇博客</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">-芜湖 起飞</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/hello-world/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T04:18:53.754Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/hello-world/" target="_blank" rel="noopener">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -367,8 +396,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
