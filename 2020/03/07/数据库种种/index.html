@@ -6,17 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//CGMgo">
-  <title>Archives | 城管懋的博客</title>
+  <title>数据库种种 | 城管懋的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="马上毕业，居家隔离">
-<meta property="og:type" content="website">
-<meta property="og:title" content="城管懋的博客">
-<meta property="og:url" content="archives/index.html">
+  <meta name="description" content="##事务的基本要素*    原子隔离并发一致##事务隔离级别（必考）*读未提交、读已提交、可重复读、序列化##如何解决事务的并发问题(脏读，幻读)（必考）*提高事务隔离级别MVCC多版本并发控制（必考）*具体参考  　　MVCC可以认为是行级锁的一个变种，它可以在很多情况下避免加锁操作，因此开销更低。MVCC的实现大都都实现了非阻塞的读操作，写操作也只锁定必要的行。InnoDB的MVCC实现，是通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库种种">
+<meta property="og:url" content="2020/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%A7%8D%E7%A7%8D/index.html">
 <meta property="og:site_name" content="城管懋的博客">
-<meta property="og:description" content="马上毕业，居家隔离">
+<meta property="og:description" content="##事务的基本要素*    原子隔离并发一致##事务隔离级别（必考）*读未提交、读已提交、可重复读、序列化##如何解决事务的并发问题(脏读，幻读)（必考）*提高事务隔离级别MVCC多版本并发控制（必考）*具体参考  　　MVCC可以认为是行级锁的一个变种，它可以在很多情况下避免加锁操作，因此开销更低。MVCC的实现大都都实现了非阻塞的读操作，写操作也只锁定必要的行。InnoDB的MVCC实现，是通">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9waWMxLnpoaW1nLmNvbS84MC92Mi1jYTg1OTlhZGRmMmFlZWUzOGY3NTI5ODhhNGMyMzgzYl9oZC5qcGc?x-oss-process=image/format,png">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/21762337-a5fc4740611fd4da.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/21762337-b8962c3707b2dbd1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/21762337-5f30332bcfd4c3e5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-84c259680288da2b5aeee416c4e2356e_r.jpg">
+<meta property="article:published_time" content="2020-03-07T10:24:38.010Z">
+<meta property="article:modified_time" content="2020-03-07T10:24:55.726Z">
 <meta property="article:author" content="城管懋">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9waWMxLnpoaW1nLmNvbS84MC92Mi1jYTg1OTlhZGRmMmFlZWUzOGY3NTI5ODhhNGMyMzgzYl9oZC5qcGc?x-oss-process=image/format,png">
   
     <link rel="alternative" href="/atom.xml" title="城管懋的博客" type="application/atom+xml">
   
@@ -156,276 +164,262 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-数据库种种" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      数据库种种
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="archives/2020" target="_blank" rel="noopener" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/07/数据库种种/" target="_blank" rel="noopener" class="archive-article-date">
+
+        
+        <a href="2020/03/07/数据库种种/" target="_blank" rel="noopener" class="archive-article-date">
   	<time datetime="2020-03-07T10:24:38.010Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-07</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/07/数据库种种/" target="_blank" rel="noopener">数据库种种</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##事务的基本要素*  </p>
+<ul>
+<li>原子隔离并发一致<br>##事务隔离级别（必考）*<br>读未提交、读已提交、可重复读、序列化<br>##如何解决事务的并发问题(脏读，幻读)（必考）*<br>提高事务隔离级别<h2 id="MVCC多版本并发控制（必考）"><a href="#MVCC多版本并发控制（必考）" target="_blank" rel="noopener" class="headerlink" title="MVCC多版本并发控制（必考）*"></a>MVCC多版本并发控制（必考）*</h2><a href="https://www.jianshu.com/p/8845ddca3b23" target="_blank" rel="noopener">具体参考</a></li>
+</ul>
+<p>　　MVCC可以认为是行级锁的一个变种，它可以在很多情况下避免加锁操作，因此开销更低。MVCC的实现大都都实现了非阻塞的读操作，写操作也只锁定必要的行。InnoDB的MVCC实现，是通过保存数据在某个时间点的快照来实现的。一个事务，不管其执行多长时间，其内部看到的数据是一致的。也就是事务在执行的过程中不会相互影响。下面我们简述一下MVCC在InnoDB中的实现。</p>
+<p>　　InnoDB的MVCC，通过在每行记录后面保存两个隐藏的列来实现：一个保存了行的创建时间，一个保存行的过期时间（删除时间），当然，这里的时间并不是时间戳，而是系统版本号，每开始一个新的事务，系统版本号就会递增。在RR隔离级别下，MVCC的操作如下：</p>
+<p>select操作。<br>InnoDB只查找版本早于（包含等于）当前事务版本的数据行。可以确保事务读取的行，要么是事务开始前就已存在，或者事务自身插入或修改的记录。<br>行的删除版本要么未定义，要么大于当前事务版本号。可以确保事务读取的行，在事务开始之前未删除。<br>insert操作。将新插入的行保存当前版本号为行版本号。<br>delete操作。将删除的行保存当前版本号为删除标识。<br>update操作。变为insert和delete操作的组合，insert的行保存当前版本号为行版本号，delete则保存当前版本号到原来的行作为删除标识。<br>　　由于旧数据并不真正的删除，所以必须对这些数据进行清理，innodb会开启一个后台线程执行清理工作，具体的规则是将删除版本号小于当前系统版本的行删除，这个过程叫做purge。</p>
+<p>##binlog,redolog,undolog都是什么，起什么作用*   </p>
+<h1 id="一、重做日志（redo-log）"><a href="#一、重做日志（redo-log）" target="_blank" rel="noopener" class="headerlink" title="一、重做日志（redo log）"></a>一、重做日志（redo log）</h1><p><strong>作用：</strong></p>
+<p>确保事务的持久性。防止在发生故障的时间点，尚有脏页未写入磁盘，在重启mysql服务的时候，根据redo log进行重做，从而达到事务的持久性这一特性。</p>
+<p>在一条更新语句进行执行的时候，InnoDB引擎会把更新记录写到redo log日志中，然后更新内存，此时算是语句执行完了，然后在空闲的时候或者是按照设定的更新策略将redo log中的内容更新到磁盘中，这里涉及到WAL即Write Ahead logging技术，他的关键点是先写日志，再写磁盘。有了redo log日志，那么在数据库进行异常重启的时候，可以根据redo log日志进行恢复，也就达到了crash-safe。</p>
+<p>redo log日志的大小是固定的，即记录满了以后就从头循环写。</p>
+<h1 id="二、回滚日志（undo-log）"><a href="#二、回滚日志（undo-log）" target="_blank" rel="noopener" class="headerlink" title="二、回滚日志（undo log）"></a>二、回滚日志（undo log）</h1><p><strong>作用：</strong></p>
+<p>保存了事务发生之前的数据的一个版本，可以用于回滚，同时可以提供多版本并发控制下的读（MVCC），也即非锁定读</p>
+<p>undo日志用于记录事务开始前的状态，用于事务失败时的回滚操作；</p>
+<h1 id="三、二进制日志（binlog）："><a href="#三、二进制日志（binlog）：" target="_blank" rel="noopener" class="headerlink" title="三、二进制日志（binlog）："></a>三、二进制日志（binlog）：</h1><p><strong>作用：</strong></p>
+<p>用于复制，在主从复制中，从库利用主库上的binlog进行重播，实现主从同步。 用于数据库的基于时间点的还原。</p>
+<p>binlog是属于MySQL Server层面的，又称为归档日志，属于逻辑日志，是以二进制的形式记录的是这个语句的原始逻辑，依靠binlog是没有crash-safe能力的.binlog是追加写，是指一份写到一定大小的时候会更换下一个文件，不会覆盖。binlog可以作为恢复数据使用，主从复制搭建.</p>
+<p><strong>执行顺序</strong><br>梳理下事务执行的各个阶段：</p>
+<p>（1）写undo日志到log buffer；</p>
+<p>（2）执行事务，并写redo日志到log buffer；</p>
+<p>（3）如果innodb_flush_log_at_trx_commit=1，则将redo日志写到log file，并刷新落盘。</p>
+<p>（4）提交事务。<br><a href="https://blog.csdn.net/u010002184/article/details/88526708" target="_blank" rel="noopener">更多相关</a><br>##InnoDB的行锁/表锁*<br>  表锁：不会出现死锁，发生锁冲突几率高，并发低。</p>
+<p>行锁：会出现死锁，发生锁冲突几率低，并发高。<br>2.行锁的类型</p>
+<p>行锁分 共享锁 和 排它锁。</p>
+<p>共享锁又称：读锁。当一个事务对某几行上读锁时，允许其他事务对这几行进行读操作，但不允许其进行写操作，也不允许其他事务给这几行上排它锁，但允许上读锁。</p>
+<p>排它锁又称：写锁。当一个事务对某几个上写锁时，不允许其他事务写，但允许读。更不允许其他事务给这几行上任何锁。包括写锁。<br>1.行锁必须有索引才能实现，否则会自动锁全表，那么就不是行锁了。</p>
+<p>2.两个事务不能锁同一个索引</p>
+<p>间隙锁<br>当我们用范围条件而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给符合条件的已有数据记录的索引项加锁；对于键值在条件范围内并不存在的记录，叫做间隙</p>
+<p>InnoDB也会对这个”间隙”加锁，这种锁机制就是所谓的间隙锁</p>
+<p>表锁<br>就是没有对没有索引字段上进行事务操作，会导致表锁，其实也可以叫意向锁<br>意向锁<br>意向锁产生的主要目的是为了处理行锁和表锁之间的冲突，事务在请求S锁和X锁前，需要先获得对应的IS、IX锁，在为数据行加共享 / 排他锁之前，InooDB 会先获取该数据行所在在数据表的对应意向锁。<br>如果没有意向锁的话，则需要遍历所有整个表判断是否有行锁的存在，以免发生冲突<br>如果有了意向锁，只需要判断该意向锁与即将添加的表级锁是否兼容即可。因为意向锁的存在代表了，有行级锁的存在或者即将有行级锁的存在。因而无需遍历整个表，即可获取结果<br>举例mysql中添加一个排他锁流程是这样的，首先去获取意向排他锁这时会去检测是否有其他已经占用的锁并且是否存在冲突，如果不冲突则获取到意向排他锁，是否存在当前行有排他锁或范围内的间隙锁如果没有则加上排他锁<br>意向锁类型<br>意向共享锁 和意向排它锁<br>意向锁之前是相互兼容的<br>排他锁持有后其他不管什么锁都是冲突的<br>下面这个图大家好好好理解下才能懂<br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9waWMxLnpoaW1nLmNvbS84MC92Mi1jYTg1OTlhZGRmMmFlZWUzOGY3NTI5ODhhNGMyMzgzYl9oZC5qcGc?x-oss-process=image/format,png" alt=""><br>版权声明：本文为CSDN博主「JAVA丶斌」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。<br>##myisam和innodb的区别，什么时候选择myisam*<br>作者：oscarwin<br>链接：<a href="https://www.zhihu.com/question/20596402/answer/211492971" target="_blank" rel="noopener">https://www.zhihu.com/question/20596402/answer/211492971</a><br>来源：知乎<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>区别：1. InnoDB 支持事务，MyISAM 不支持事务。这是 MySQL 将默认存储引擎从 MyISAM 变成 InnoDB 的重要原因之一；2. InnoDB 支持外键，而 MyISAM 不支持。对一个包含外键的 InnoDB 表转为 MYISAM 会失败；  3. InnoDB 是聚集索引，MyISAM 是非聚集索引。聚簇索引的文件存放在主键索引的叶子节点上，因此 InnoDB 必须要有主键，通过主键索引效率很高。但是辅助索引需要两次查询，先查询到主键，然后再通过主键查询到数据。因此，主键不应该过大，因为主键太大，其他索引也都会很大。而 MyISAM 是非聚集索引，数据文件是分离的，索引保存的是数据文件的指针。主键索引和辅助索引是独立的。 4. InnoDB 不保存表的具体行数，执行 select count(*) from table 时需要全表扫描。而MyISAM 用一个变量保存了整个表的行数，执行上述语句时只需要读出该变量即可，速度很快；    5. InnoDB 最小的锁粒度是行锁，MyISAM 最小的锁粒度是表锁。一个更新语句会锁住整张表，导致其他查询和更新都会被阻塞，因此并发访问受限。这也是 MySQL 将默认存储引擎从 MyISAM 变成 InnoDB 的重要原因之一；如何选择：1. 是否要支持事务，如果要请选择 InnoDB，如果不需要可以考虑 MyISAM；2. 如果表中绝大多数都只是读查询，可以考虑 MyISAM，如果既有读写也挺频繁，请使用InnoDB。3. 系统奔溃后，MyISAM恢复起来更困难，能否接受，不能接受就选 InnoDB； 4. MySQL5.5版本开始Innodb已经成为Mysql的默认引擎(之前是MyISAM)，说明其优势是有目共睹的。如果你不知道用什么存储引擎，那就用InnoDB，至少不会差。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/21762337-a5fc4740611fd4da.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>##为什么选择B+树作为索引结构（必考）*<br>  ##索引B+树的叶子节点都可以存哪些东西（必考）*<br>##查询在什么时候不走（预期中的）索引（必考）*  </p>
+<ul>
+<li><p>模糊查询 %like</p>
+</li>
+<li><p>索引列参与计算,使用了函数</p>
+</li>
+<li><p>非最左前缀顺序</p>
+</li>
+<li><p>where对null判断</p>
+</li>
+<li><p>where不等于</p>
+</li>
+<li><p>or操作有至少一个字段没有索引</p>
+</li>
+<li><p>需要回表的查询结果集过大（超过配置的范围）</p>
+<p>##sql如何优化*  </p>
+</li>
+<li><p>尽可能的少用*，用所需要的字段来代替 *。</p>
+</li>
+<li><p>在一些需要查询的字段建立索引。</p>
+</li>
+<li><p>尽量少用%+字段+%的操作，这样会放弃索引。</p>
+</li>
+<li><p>尽量避免在 where 子句中对字段进行 null 值判断。</p>
+</li>
+<li><p>尽量避免在 where 子句中对字段进行表达式操作、or、！=。</p>
+</li>
+<li><p>很多时候用 exists 代替 in 是一个好的选择。</p>
+</li>
+<li><p>尽可能的使用 varchar 代替 char。</p>
+</li>
+<li><p>如果可以用数字来代替就尽量别用字符格式。</p>
+</li>
+<li><p>避免使用耗费资源的操作。</p>
+</li>
+<li><p>优化GROUP BY。<br>##explain是如何解析sql的*<br>对于复杂、效率低的sql语句，我们通常是使用explain sql 来分析sql语句，这个语句可以打印出，语句的执行过程。这样方便我们分析，进行优化。</p>
+</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/21762337-b8962c3707b2dbd1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image"></p>
+<p>首先，说一下，explain查询出来的数据如何分析。</p>
+<p><strong>table ：</strong>这一列是查询设计的表。</p>
+<p><strong>type ：</strong>很重要的一列，显示了查询使用了那种类型，是否使用的索引，能反映出语句的质量。一般这个指标从好到坏依次是：system&gt;const&gt;eq_ref&gt;ref(最好能达到)&gt;fulltext&gt;ref_or_null&gt;index_merge&gt;unique_subquery&gt;index_subquery&gt;range&gt;index&gt;ALL</p>
+<p>为了保证查询至少达到range级别。最好达到ref，否则的话，只能说明这条语句性能有待提高。</p>
+<p>*<em>ref *</em>表示所有具有匹配的索引的行都被用到</p>
+<p><strong>range</strong>索引范围内查找</p>
+<p><strong>index</strong>全索引树扫描</p>
+<p><strong>all</strong>全表扫描</p>
+<p><strong>possible_keys：</strong>指出mysql在试用了哪个索引在该表中查找行。如果没有使用任何索引，就显示的NULL，可以用于对优化时的索引调整。</p>
+<p><strong>key：</strong>显示使用的索引，如果没有使用，则显示NULL</p>
+<p>key_len：显示的是所使用的索引长度，如果没使用，则是NULL。当然，在使用索引的情况下，索引长度越小。效果越明显。</p>
+<p>ref：显示使用那个列或常数雨key一起从表中选择行。</p>
+<p>rows：执行查询的行数，如果行数越小，说明查询次数越少，效率越高。</p>
+<p>extra：包含查询mysql解决查询的详细信息。</p>
+<p>在上面的查询解释表中，type为ALL所以，这个查询是全表扫描，并没有使用索引。所以，我们要分析这条语句中，哪个查询条件，适合添加索引。这个要根据具体问题具体分析了。</p>
+<p>接下来，我对role表中的priority_level添加索引，添加后执行结果如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/21762337-5f30332bcfd4c3e5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image"></p>
+<p>查询次数变少了。而且也用到了刚才加的pl_idx索引。查询效率提高了。当然这只是优化了一小步。也只是初步认识了一下explain。还需要多加练习。</p>
+<p>##order by原理<br>全字段排序<br>select city,name,age from t where city=’杭州’ order by name limit 1000 ;<br><img src="https://pic3.zhimg.com/v2-84c259680288da2b5aeee416c4e2356e_r.jpg" alt=""></p>
+<p>Extra 这个字段中的“Using filesort”表示的就是需要排序，MySQL 会给每个线程分配一块内存用于排序，称为 sort_buffer。</p>
+<p>通常情况下，这个语句执行流程如下所示 ：</p>
+<p>初始化 sort_buffer，确定放入 name、city、age 这三个字段；<br>从索引 city 找到第一个满足 city=’杭州’条件的主键 id，也就是图中的 ID_X；<br>到主键 id 索引取出整行，取 name、city、age 三个字段的值，存入 sort_buffer 中；<br>从索引 city 取下一个记录的主键 id；<br>重复步骤 3、4 直到 city 的值不满足查询条件为止，对应的主键 id 也就是图中的 ID_Y；<br>对 sort_buffer 中的数据按照字段 name 做快速排序；<br>按照排序结果取前 1000 行返回给客户端<br>图中“按 name 排序”这个动作，可能在内存中完成，也可能需要使用外部排序，这取决于排序所需的内存和参数 sort_buffer_size。</p>
+<p>sort_buffer_size，就是 MySQL 为排序开辟的内存（sort_buffer）的大小。如果要排序的数据量小于 sort_buffer_size，排序就在内存中完成。但如果排序数据量太大，内存放不下，则不得不利用磁盘临时文件辅助排序</p>
+<p>内存放不下时，就需要使用外部排序，外部排序一般使用归并排序算法。可以这么简单理解，MySQL 将需要排序的数据分成 12 份，每一份单独排序后存在这些临时文件中。然后把这 12 个有序文件再合并成一个有序的大文件</p>
+<p>rowid 排序<br>在上面这个算法过程里面，只对原表的数据读了一遍，剩下的操作都是在 sort_buffer 和临时文件中执行的。但这个算法有一个问题，就是如果查询要返回的字段很多的话，那么 sort_buffer 里面要放的字段数太多，这样内存里能够同时放下的行数很少，要分成很多个临时文件，排序的性能会很差。</p>
+<p>SET max_length_for_sort_data = 16;<br>max_length_for_sort_data，</p>
+<p>是 MySQL 中专门控制用于排序的行数据的长度的一个参数。它的意思是，如果单行的长度超过这个值，MySQL 就认为单行太大，要换一个算法。</p>
+<p>初始化 sort_buffer，确定放入两个字段，即 name 和 id；<br>从索引 city 找到第一个满足 city=’杭州’条件的主键 id，也就是图中的 ID_X；<br>到主键 id 索引取出整行，取 name、id 这两个字段，存入 sort_buffer 中；<br>从索引 city 取下一个记录的主键 id；<br>重复步骤 3、4 直到不满足 city=’杭州’条件为止，也就是图中的 ID_Y；<br>对 sort_buffer 中的数据按照字段 name 进行排序；<br>遍历排序结果，取前 1000 行，并按照 id 的值回到原表中取出 city、name 和 age 三个字段返回给客户端。<br>全字段排序 VS rowid 排序<br>如果 MySQL 实在是担心排序内存太小，会影响排序效率，才会采用 rowid 排序算法，这样排序过程中一次可以排序更多行，但是需要再回到原表去取数据。</p>
+<p>如果 MySQL 认为内存足够大，会优先选择全字段排序，把需要的字段都放到 sort_buffer 中，这样排序后就会直接从内存里面返回查询结果了，不用再回到原表去取数据。</p>
+<p>这也就体现了 MySQL 的一个设计思想：如果内存够，就要多利用内存，尽量减少磁盘访问。</p>
+<p>对于 InnoDB 表来说，rowid 排序会要求回表多造成磁盘读，因此不会被优先选择。</p>
+<p>alter table t add index city_user(city, name);</p>
+<p>覆盖索引是指，索引上的信息足够满足查询请求，不需要再回到主键索引上去取数据。</p>
+<p>alter table t add index city_user_age(city, name, age);<br>Extra 字段里面多了“Using index”，表示的就是使用了覆盖索引，性能上会快很多。</p>
+<p>这里并不是说要为了每个查询能用上覆盖索引，就要把语句中涉及的字段都建上联合索引，毕竟索引还是有维护代价的。这是一个需要权衡的决定。</p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http:2020/03/07/数据库种种/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/06/spring注入方式/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-06T01:50:42.713Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="2020/03/06/spring注入方式/" target="_blank" rel="noopener" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">spring注入方式</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/06/spring注入方式/" target="_blank" rel="noopener">spring注入方式</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/04/jvm种种/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-04T14:31:26.764Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/04/jvm种种/" target="_blank" rel="noopener">jvm种种</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-03T03:46:55.249Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener">redis内存淘汰策略</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-03T02:39:12.879Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener">redis中zset底层实现</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/02/关系型数据库/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-02T07:47:45.795Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/02/关系型数据库/" target="_blank" rel="noopener">关系型数据库</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/MackDown语法写博客/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T13:48:24.502Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/MackDown语法写博客/" target="_blank" rel="noopener">MackDown语法写博客</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/我的第一篇博客/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T04:47:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/我的第一篇博客/" target="_blank" rel="noopener">我的第一篇博客</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">-芜湖 起飞</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/hello-world/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T04:18:53.754Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/hello-world/" target="_blank" rel="noopener">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -448,8 +442,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

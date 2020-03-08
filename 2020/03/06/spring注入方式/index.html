@@ -6,15 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="//CGMgo">
-  <title>Archives | 城管懋的博客</title>
+  <title>spring注入方式 | 城管懋的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="马上毕业，居家隔离">
-<meta property="og:type" content="website">
-<meta property="og:title" content="城管懋的博客">
-<meta property="og:url" content="archives/index.html">
+  <meta name="description" content="原文章：Spring的依赖注入有三种方式: 1,构造器注入 2,setter注入 3,接口注入 下面我给大家介绍一下这三种注入 1.构造器注入 　　构造器注入主要是依赖于构造方法去实现,构造方法可以是有参也可以是无参,我们在平常都是通过类的构造方法来创建类对象,以及给他赋值,同样Spring 也可以采用反射的方式,通过构造方法来完成注入注入(赋值),这就是构造器注入的原理,说了那么多我们就来看看代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring注入方式">
+<meta property="og:url" content="2020/03/06/spring%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F/index.html">
 <meta property="og:site_name" content="城管懋的博客">
-<meta property="og:description" content="马上毕业，居家隔离">
+<meta property="og:description" content="原文章：Spring的依赖注入有三种方式: 1,构造器注入 2,setter注入 3,接口注入 下面我给大家介绍一下这三种注入 1.构造器注入 　　构造器注入主要是依赖于构造方法去实现,构造方法可以是有参也可以是无参,我们在平常都是通过类的构造方法来创建类对象,以及给他赋值,同样Spring 也可以采用反射的方式,通过构造方法来完成注入注入(赋值),这就是构造器注入的原理,说了那么多我们就来看看代">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-06T01:50:42.713Z">
+<meta property="article:modified_time" content="2020-03-06T01:51:24.752Z">
 <meta property="article:author" content="城管懋">
 <meta name="twitter:card" content="summary">
   
@@ -156,276 +158,220 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-spring注入方式" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="archives/2020" target="_blank" rel="noopener" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/07/数据库种种/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-07T10:24:38.010Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-07</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/07/数据库种种/" target="_blank" rel="noopener">数据库种种</a>
+    <h1 class="article-title" itemprop="name">
+      spring注入方式
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/06/spring注入方式/" target="_blank" rel="noopener" class="archive-article-date">
+        
+        <a href="2020/03/06/spring注入方式/" target="_blank" rel="noopener" class="archive-article-date">
   	<time datetime="2020-03-06T01:50:42.713Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/06/spring注入方式/" target="_blank" rel="noopener">spring注入方式</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文章：<a href="https://www.cnblogs.com/c-c-c-c/p/9231539.html" target="_blank" rel="noopener"></a><br>Spring的依赖注入有三种方式:</p>
+<p>1,构造器注入</p>
+<p>2,setter注入</p>
+<p>3,接口注入</p>
+<p>下面我给大家介绍一下这三种注入</p>
+<p>1.<strong>构造器注入</strong></p>
+<p>　　构造器注入主要是依赖于构造方法去实现,构造方法可以是有参也可以是无参,我们在平常都是通过类的构造方法来创建类对象,以及给他赋值,同样Spring 也可以采用反射的方式,通过构造方法来完成注入注入(赋值),这就是构造器注入的原理,说了那么多我们就来看看代码的实现吧</p>
+<pre><code>/**
+*
+*  构造器注入  
+*
+*/ 
+package com.xiaojiang.Spring;
+public class Role {
+private int id;
+private String roleName;
+private String note;
+public Role(){}
+public Role(int id,String roleName, String note)
+{&lt;br&gt;　　　　　　　　　 super();
+    this.id = id;
+    this.roleName = roleName;
+    this.note = note;
+}&lt;br&gt;&lt;br&gt;　　　　　　　//setter,getter方法省略
+}</code></pre><p>applicationContext.xml文件</p>
+<pre><code>&lt;!--构造器配置--&gt;
 
-        <div class="article-info info-on-right">
-          
-          
+&lt;bean id=&quot;Role&quot; class=&quot;com.xiaojiang.Spring.Role&quot;&gt;
+    &lt;constructor-arg value=&quot;1&quot; type=&quot;int&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;constructor-arg value=&quot;小江&quot; type=&quot;java.lang.String&quot;&gt;&lt;/constructor-arg&gt;
+    &lt;constructor-arg value=&quot;有点丑&quot; type=&quot;java.lang.String&quot;&gt;&lt;/constructor-arg&gt;
+&lt;/bean&gt;</code></pre><p>　constructor-arg元素用于定义类构造方法的参数,其中type用于定义参数的类型,也可以使用index来定义参数的位置,而这里的value是用于设置值,以上的代码就是通过一个Spring去装配一个Bean。</p>
+<p>2.<strong>setter注入</strong></p>
+<p>　　setter是Spring现在最主流的注入方式,它可以利用Java Bean 规范所定义set/get方法来完成注入,可读性灵活性高,它不需要使用构造器注入时出现的多个参数,它可以把构造方法声明成无参构造,再使用setter注入设置相对应的值,其实也是通过java反射技术去实现的.<br>还有一点需要注意：如果通过set方法注入属性，那么spring会通过默认的空参构造方法来实例化对象，所以如果在类中写了一个带有参数的构造方法，一定要把空参数的构造方法写上，否则spring没有办法实例化对象，导致报错。</p>
+<p>类里面的代码set和get方法我就省略了,下面直接上xml代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">     &lt;!--配置setter注入--&gt;</span><br><span class="line">    &lt;bean id&#x3D;&quot;Role&quot; class&#x3D;&quot;com.xiaojiang.Spring.Role&quot;&gt;</span><br><span class="line">     &lt;property name&#x3D;&quot;id&quot; value&#x3D;&quot;1&quot;&gt;&lt;property&gt;</span><br><span class="line">     &lt;property name&#x3D;&quot;roleName&quot; value&#x3D;&quot;小江&quot;&gt;&lt;property&gt;</span><br><span class="line">     &lt;property name&#x3D;&quot;note&quot; value&#x3D;&quot;测试&quot;&gt;&lt;property&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure>
 
+<p>　以上方式就是Spring最主要的方式了,使用广泛</p>
+<p>3.<strong>接口注入</strong></p>
+<p>　　　　　　接口注入模式因为历史较为悠久，在很多容器中都已经得到应用。但由于其在灵活性、易用性上不如其他两种注入模式，因而在 IOC 的专题世界内并不被看好。 </p>
+<p>基于注解的注入<br>在介绍注解注入的方式前，先简单了解bean的一个属性autowire，autowire主要有三个属性值：constructor，byName，byType。<br>constructor：通过构造方法进行自动注入，spring会匹配与构造方法参数类型一致的bean进行注入，如果有一个多参数的构造方法，一个只有一个参数的构造方法，在容器中查找到多个匹配多参数构造方法的bean，那么spring会优先将bean注入到多参数的构造方法中。</p>
+<p>byName：被注入bean的id名必须与set方法后半截匹配，并且id名称的第一个单词首字母必须小写，这一点与手动set注入有点不同。</p>
+<p>byType：查找所有的set方法，将符合符合参数类型的bean注入。</p>
+<p>下面进入正题：注解方式注册bean，注入依赖 </p>
+<p>主要有四种注解可以注册bean，每种注解可以任意使用，只是语义上有所差异：</p>
+<p>@Component：可以用于注册所有bean<br>@Repository：主要用于注册dao层的bean<br>@Controller：主要用于注册控制层的bean<br>@Service：主要用于注册服务层的bean<br>描述依赖关系主要有两种：</p>
+<p>@Resource：java的注解，默认以byName的方式去匹配与属性名相同的bean的id，如果没有找到就会以byType的方式查找，如果byType查找到多个的话，使用@Qualifier注解（spring注解）指定某个具体名称的bean。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Resource</span><br><span class="line">@Qualifier(&quot;userDaoMyBatis&quot;)</span><br><span class="line">private IUserDao userDao;</span><br><span class="line"></span><br><span class="line">public UserService()&#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>@Autowired：spring注解，默认是以byType的方式去匹配类型相同的bean，如果只匹配到一个，那么就直接注入该bean，无论要注入的 bean 的 name 是什么；如果匹配到多个，就会调用 DefaultListableBeanFactory 的 determineAutowireCandidate 方法来决定具体注入哪个bean。determineAutowireCandidate 方法的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; candidateBeans 为上一步通过类型匹配到的多个bean，该 Map 中至少有两个元素。</span><br><span class="line">protected String determineAutowireCandidate(Map&lt;String, Object&gt; candidateBeans, DependencyDescriptor descriptor) &#123;</span><br><span class="line">    &#x2F;&#x2F;  requiredType 为匹配到的接口的类型</span><br><span class="line">   Class&lt;?&gt; requiredType &#x3D; descriptor.getDependencyType();</span><br><span class="line">   &#x2F;&#x2F; 1. 先找 Bean 上有@Primary 注解的，有则直接返回</span><br><span class="line">   String primaryCandidate &#x3D; this.determinePrimaryCandidate(candidateBeans, requiredType);</span><br><span class="line">   if (primaryCandidate !&#x3D; null) &#123;</span><br><span class="line">       return primaryCandidate;</span><br><span class="line">   &#125; else &#123;</span><br><span class="line">       &#x2F;&#x2F; 2.再找 Bean 上有 @Order，@PriorityOrder 注解的，有则返回</span><br><span class="line">       String priorityCandidate &#x3D; this.determineHighestPriorityCandidate(candidateBeans, requiredType);</span><br><span class="line">       if (priorityCandidate !&#x3D; null) &#123;</span><br><span class="line">           return priorityCandidate;</span><br><span class="line">       &#125; else &#123;</span><br><span class="line">           Iterator var6 &#x3D; candidateBeans.entrySet().iterator();</span><br><span class="line"></span><br><span class="line">           String candidateBeanName;</span><br><span class="line">           Object beanInstance;</span><br><span class="line">           do &#123;</span><br><span class="line">               if (!var6.hasNext()) &#123;</span><br><span class="line">                   return null;</span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">               &#x2F;&#x2F; 3. 再找 bean 的名称匹配的</span><br><span class="line">               Entry&lt;String, Object&gt; entry &#x3D; (Entry)var6.next();</span><br><span class="line">               candidateBeanName &#x3D; (String)entry.getKey();</span><br><span class="line">               beanInstance &#x3D; entry.getValue();</span><br><span class="line">           &#125; while(!this.resolvableDependencies.values().contains(beanInstance) &amp;&amp; !this.matchesBeanName(candidateBeanName, descriptor.getDependencyName()));</span><br><span class="line"></span><br><span class="line">           return candidateBeanName;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先找 Bean 上有@Primary 注解的，有则直接返回 bean 的 name。<br>再找 Bean 上有 @Order，@PriorityOrder 注解的，有则返回 bean 的 name。<br>最后再以名称匹配（ByName）的方式去查找相匹配的 bean。<br>可以简单的理解为先以 ByType 的方式去匹配，如果匹配到了多个再以 ByName 的方式去匹配，找到了对应的 bean 就去注入，没找到就抛出异常。</p>
+<p>还有一点要注意：如果使用了 @Qualifier 注解，那么当自动装配匹配到多个 bean 的时候就不会进入 determineAutowireCandidate 方法（亲测），而是直接查找与 @Qualifer 指定的 bean name 相同的 bean 去注入，找到了就直接注入，没有找到则抛出异常。</p>
+<p>tips：大家如果认真思考可能会发现 ByName 的注入方式和 @Qualifier 有点类似，都是在自动装配匹配到多个 bean 的时候，指定一个具体的 bean，那它们有什么不同呢？</p>
+<p>ByName 的方式需要遍历，@Qualifier 直接一次定位。在匹配到多个 bean 的情况下，使用 @Qualifier 来指明具体装配的 bean 效率会更高一下。</p>
+<p>博主个人觉得：@Qualifer 注解出现的意义或许就是 Spring 为了解决 JDK 自带的 ByName 遍历匹配效率低下的问题。要不然也不会出现两个容易混淆的匹配方式。<br>————————————————<br>版权声明：本文为CSDN博主「曲健磊」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。<br>原文链接：<a href="https://blog.csdn.net/a909301740/article/details/78379720" target="_blank" rel="noopener">https://blog.csdn.net/a909301740/article/details/78379720</a></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http:2020/03/06/spring注入方式/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/04/jvm种种/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-04T14:31:26.764Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="2020/03/07/数据库种种/" target="_blank" rel="noopener" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          数据库种种
+        
+      </div>
+    </a>
+  
+  
+    <a href="2020/03/04/jvm种种/" target="_blank" rel="noopener" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">jvm种种</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/04/jvm种种/" target="_blank" rel="noopener">jvm种种</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-03T03:46:55.249Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/03/redis内存淘汰策略/" target="_blank" rel="noopener">redis内存淘汰策略</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-03T02:39:12.879Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-03</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/03/redis中zset底层实现/" target="_blank" rel="noopener">redis中zset底层实现</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/02/关系型数据库/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-02T07:47:45.795Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/02/关系型数据库/" target="_blank" rel="noopener">关系型数据库</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/MackDown语法写博客/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T13:48:24.502Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/MackDown语法写博客/" target="_blank" rel="noopener">MackDown语法写博客</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/我的第一篇博客/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T04:47:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/我的第一篇博客/" target="_blank" rel="noopener">我的第一篇博客</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">-芜湖 起飞</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="2020/03/01/hello-world/" target="_blank" rel="noopener" class="archive-article-date">
-  	<time datetime="2020-03-01T04:18:53.754Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="2020/03/01/hello-world/" target="_blank" rel="noopener">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -448,8 +394,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
