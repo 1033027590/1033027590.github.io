@@ -158,6 +158,147 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-java种种" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="2020/03/10/java种种/" target="_blank" rel="noopener">java种种</a>
+    </h1>
+  
+
+        
+        <a href="2020/03/10/java种种/" target="_blank" rel="noopener" class="archive-article-date">
+  	<time datetime="2020-03-10T03:56:01.005Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>###HashMap和ConcurrentHashMap区别（必考）<br>hashmap：<br>线程不安全<br>实现map接口<br>可以clone<br>ConcurrentHashMap：<br>线程安全<br>实现ConcurrentMap接口<br>不能clone<br>分段锁</p>
+<h3 id="ConcurrentHashMap的数据结构"><a href="#ConcurrentHashMap的数据结构" target="_blank" rel="noopener" class="headerlink" title="ConcurrentHashMap的数据结构*"></a>ConcurrentHashMap的数据结构*</h3><p>oncurrentHashMap 为了提高本身的并发能力，在内部采用了一个叫做 Segment 的结构，一个 Segment 其实就是一个类 Hash Table 的结构，Segment 内部维护了一个链表数组，我们用下面这一幅图来看下 ConcurrentHashMap 的内部结构,从下面的结构我们可以了解到，ConcurrentHashMap 定位一个元素的过程需要进行两次Hash操作，第一次 Hash 定位到 Segment，第二次 Hash 定位到元素所在的链表的头部，因此，这一种结构的带来的副作用是 Hash 的过程要比普通的 HashMap 要长，但是带来的好处是写操作的时候可以只对元素所在的 Segment 进行操作即可，不会影响到其他的 Segment，这样，在最理想的情况下，ConcurrentHashMap 可以最高同时支持 Segment 数量大小的写操作（刚好这些写操作都非常平均地分布在所有的 Segment上），所以，通过这一种结构，ConcurrentHashMap 的并发能力可以大大的提高。我们用下面这一幅图来看下ConcurrentHashMap的内部结构详情图，如下:</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/21762337-c8108f93dc12ceae.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image"></p>
+<p>不难看出，ConcurrentHashMap采用了二次hash的方式，第一次hash将key映射到对应的segment，而第二次hash则是映射到segment的不同桶(bucket)中。</p>
+<p>为什么要用二次hash，主要原因是为了构造分离锁，使得对于map的修改不会锁住整个容器，提高并发能力。当然，没有一种东西是绝对完美的，二次hash带来的问题是整个hash的过程比hashmap单次hash要长，所以，如果不是并发情形，不要使用concurrentHashmap。</p>
+<p>JAVA7之前ConcurrentHashMap主要采用锁机制，在对某个Segment进行操作时，将该Segment锁定，不允许对其进行非查询操作，而在JAVA8之后采用CAS无锁算法，这种乐观操作在完成前进行判断，如果符合预期结果才给予执行，对并发操作提供良好的优化.<br>CAS即通过设置期望值，现有值，新值来进行对比，当期望等于现有时就可以更新，把现有值变为新值。</p>
+<p>  ###高并发HashMap的环是如何产生的*<br><a href="https://blog.csdn.net/bjwfm2011/article/details/81076736" target="_blank" rel="noopener">https://blog.csdn.net/bjwfm2011/article/details/81076736</a><br>由于并发情况下各个线程在resize和rehash的时候由于执行的速度不同导致环的产生<br> ###volatile作用（必考）*<br>保证变量值的可见性，避免由于cpu三级缓存以及各线程内存空间不同造成的错误读取变量值，使用volatile变量后线程会去内存中读出最新值，cpu在改变变量值后会立即把它更新到内存中。<br> ###Atomic类如何保证原子性（CAS操作）（必考）*<br>CAS 有效地说明了“我认为位置 V 应该包含值 A；如果包含该值，则将 B 放到这个位置；否则，不要更改该位置，只告诉我这个位置现在的值即可。”<br>CAS虽然很高效的解决原子操作，但是CAS仍然存在三大问题。ABA问题，循环时间长开销大和只能保证一个共享变量的原子操作</p>
+<ol>
+<li>ABA问题。因为CAS需要在操作值的时候检查下值有没有发生变化，如果没有发生变化则更新，但是如果一个值原来是A，变成了B，又变成了A，那么使用CAS进行检查时会发现它的值没有发生变化，但是实际上却变化了。ABA问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量更新的时候把版本号加一，那么A－B－A 就会变成1A-2B－3A。</li>
+</ol>
+<p>从Java1.5开始JDK的atomic包里提供了一个类AtomicStampedReference来解决ABA问题。这个类的compareAndSet方法作用是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
+<p>关于ABA问题参考文档: <a href="http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html" target="_blank" rel="noopener">http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html</a></p>
+<ol start="2">
+<li>循环时间长开销大。自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。如果JVM能支持处理器提供的pause指令那么效率会有一定的提升，pause指令有两个作用，第一它可以延迟流水线执行指令（de-pipeline）,使CPU不会消耗过多的执行资源，延迟的时间取决于具体实现的版本，在一些处理器上延迟时间是零。第二它可以避免在退出循环的时候因内存顺序冲突（memory order violation）而引起CPU流水线被清空（CPU pipeline flush），从而提高CPU的执行效率。</li>
+</ol>
+<ol start="3">
+<li>只能保证一个共享变量的原子操作。当对一个共享变量执行操作时，我们可以使用循环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性，这个时候就可以用锁，或者有一个取巧的办法，就是把多个共享变量合并成一个共享变量来操作。比如有两个共享变量i＝2,j=a，合并一下ij=2a，然后用CAS来操作ij。从Java1.5开始JDK提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。<br>###synchronized和Lock的区别（必考）*<br>Synchronized是关键字，内置语言实现，Lock是接口。<br>Synchronized在线程发生异常时会自动释放锁，因此不会发生异常死锁。Lock异常时不会自动释放锁，所以需要在finally中实现释放锁。<br>Lock是可以中断锁，Synchronized是非中断锁，必须等待线程执行完成释放锁。<br>Lock可以使用读锁提高多线程读效率。<br>Synchronized：底层使用指令码方式来控制锁的，映射成字节码指令就是增加来两个指令：monitorenter和monitorexit。当线程执行遇到monitorenter指令时会尝试获取内置锁，如果获取锁则锁计数器+1，如果没有获取锁则阻塞；当遇到monitorexit指令时锁计数器-1，如果计数器为0则释放锁。</li>
+</ol>
+<p>Lock：底层是CAS乐观锁，依赖AbstractQueuedSynchronizer类，把所有的请求线程构成一个CLH队列。而对该队列的操作均通过Lock-Free（CAS）操作。<br> ###为什么要使用线程池（必考）*<br>如果程序中有大量短时间任务的线程任务，由于创建和销毁线程需要和底层操作系统交互，大量时间都耗费在创建和销毁线程上，因而比较浪费时间，系统效率很低<br>而线程池里的每一个线程任务结束后，并不会死亡，而是再次回到线程池中成为空闲状态，等待下一个对象来使用，因而借助线程池可以提高程序的执行效率<br><a href="https://blog.csdn.net/kjw888/article/details/97614944" target="_blank" rel="noopener">https://blog.csdn.net/kjw888/article/details/97614944</a><br> ###核心线程池ThreadPoolExecutor的参数（必考）*<br>1、corePoolSize：核心线程数<br>        * 核心线程会一直存活，及时没有任务需要执行<br>        * 当线程数小于核心线程数时，即使有线程空闲，线程池也会优先创建新线程处理<br>        * 设置allowCoreThreadTimeout=true（默认false）时，核心线程会超时关闭</p>
+<pre><code>2、queueCapacity：任务队列容量（阻塞队列）
+    * 当核心线程数达到最大时，新任务会放在队列中排队等待执行
+
+3、maxPoolSize：最大线程数
+    * 当线程数&gt;=corePoolSize，且任务队列已满时。线程池会创建新线程来处理任务
+    * 当线程数=maxPoolSize，且任务队列已满时，线程池会拒绝处理任务而抛出异常
+
+4、 keepAliveTime：线程空闲时间
+    * 当线程空闲时间达到keepAliveTime时，线程会退出，直到线程数量=corePoolSize
+    * 如果allowCoreThreadTimeout=true，则会直到线程数量=0
+
+5、allowCoreThreadTimeout：允许核心线程超时
+6、rejectedExecutionHandler：任务拒绝处理器
+    * 两种情况会拒绝处理任务：
+        - 当线程数已经达到maxPoolSize，切队列已满，会拒绝新任务
+        - 当线程池被调用shutdown()后，会等待线程池里的任务执行完毕，再shutdown。如果在调用shutdown()和线程池真正shutdown之间提交任务，会拒绝新任务
+    * 线程池会调用rejectedExecutionHandler来处理这个任务。如果没有设置默认是AbortPolicy，会抛出异常
+    * ThreadPoolExecutor类有几个内部实现类来处理这类情况：
+        - AbortPolicy 丢弃任务，抛运行时异常
+        - CallerRunsPolicy 执行任务
+        - DiscardPolicy 忽视，什么都不会发生
+        - DiscardOldestPolicy 从队列中踢出最先进入队列（最后一个执行）的任务
+    * 实现RejectedExecutionHandler接口，可自定义处理器</code></pre><p>###ThreadPoolExecutor的工作流程（必考）* </p>
+<p>其实内部实现，大家通过参数就可以得知，任务少的时候的线程数只有核心线程数，然后任务多的时候就会额外创建新的线程。<strong>但是，怎么去衡量任务多和任务少，具体什么时候任务会直接拿去执行、或者拿去放到队列里边。</strong>看到下面的流程图，真相可大白！</p>
+<p><img src="//upload-images.jianshu.io/upload_images/18422799-8ae16bca10debd47.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/741/format/webp" alt="image"></p>
+<p>其中 workQueue就是存储执行前task的阻塞队列，workQueueSize即该队列的大小。<strong>当处理完job完之后的线程，它们还有一些生命周期。</strong>，对它们的处理流程如下：</p>
+<p><img src="//upload-images.jianshu.io/upload_images/18422799-2617e2d9719946be.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/901/format/webp" alt="image"></p>
+<p><strong>总结来讲</strong>，在线程池内部主要分为了三个情况进行处理。</p>
+<ol>
+<li>workSize &lt; corePoolSize时创建线程。</li>
+<li>workSize &gt;= corePoolSize时，将job放到workQueue中。</li>
+<li>当队列已经满了，则又创建新的线程去处理job，但是得满足当前线程数小于maximumPoolSize，否则进行reject处理。</li>
+</ol>
+<p>作者：爱喝汽水的老刘<br>链接：<a href="https://www.jianshu.com/p/47574cd42528" target="_blank" rel="noopener">https://www.jianshu.com/p/47574cd42528</a><br>来源：简书<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<h3 id="如何控制线程池线程的优先级"><a href="#如何控制线程池线程的优先级" target="_blank" rel="noopener" class="headerlink" title="如何控制线程池线程的优先级*"></a>如何控制线程池线程的优先级*</h3><h3 id="线程之间如何通信"><a href="#线程之间如何通信" target="_blank" rel="noopener" class="headerlink" title="线程之间如何通信*"></a>线程之间如何通信*</h3><p>　　Java中线程通信协作的最常见的两种方式：</p>
+<p>　　一.syncrhoized加锁的线程的<strong>Object类</strong>的wait()/notify()/notifyAll()</p>
+<p>　　二.ReentrantLock类加锁的线程的<strong>Condition类的</strong>await()/signal()/signalAll()</p>
+<p>　　线程间直接的数据交换：</p>
+<p>　　三.通过管道进行线程间通信：1）字节流；2）字符流  　</p>
+<h2 id="一-syncrhoized加锁的线程的Object类的wait-notify-notifyAll"><a href="#一-syncrhoized加锁的线程的Object类的wait-notify-notifyAll" target="_blank" rel="noopener" class="headerlink" title="一.syncrhoized加锁的线程的Object类的wait()/notify()/notifyAll()"></a>一.syncrhoized加锁的线程的<strong>Object类</strong>的wait()/notify()/notifyAll()</h2><p>wait()、notify()和notifyAll()是Object类中的方法：</p>
+<p>从这三个方法的文字描述可以知道以下几点信息：</p>
+<p>　　1）wait()、notify()和notifyAll()方法是<strong>本地方法</strong>，并且为<strong>final方法，无法被重写。</strong></p>
+<p>　　2）调用<strong>某个对象的wait()方法</strong>能让当<strong>前线程阻塞</strong>，并且<strong>当前线程必须拥有此对象的monitor（即锁）</strong></p>
+<p>　　3）调用<strong>某个对象的notify()方法</strong>能够<strong>唤醒一个正在等待这个对象的monitor的线程</strong>，如果有多个线程都在等待这个对象的monitor，则<strong>只能唤醒其中一个线程</strong>；</p>
+<p>　　4）调用notifyAll()方法能够<strong>唤醒所有正在等待这个对象的monitor的线程</strong>；</p>
+<p>　　有朋友可能会有疑问：<strong>为何这三个不是Thread类声明中的方法，而是Object类中声明的方法</strong>（当然由于Thread类继承了Object类，所以Thread也可以调用者三个方法）？其实这个问题很简单，<strong>由于每个对象都拥有monitor（即锁）</strong>，所以让当前线程等待某个对象的锁，当然应该通过这个对象来操作了。而不是用当前线程来操作，因为<strong>当前线程可能会等待多个线程的锁</strong>，如果通过线程来操作，就非常复杂了。</p>
+<p>　　上面已经提到，如果<strong>调用某个对象的wait()方法，当前线程必须拥有这个对象的monitor（即锁）</strong>，<strong>因此调用wait()方法必须在同步块或者同步方法中进行（synchronized块或者synchronized方法）</strong>。<strong>如果当前线程没有这个对象的锁就调用wait（）方法，则会抛出IllegalMonitorStateException.</strong></p>
+<p>　　 <strong>调用某个对象的wait()方法，相当于让当前线程交出（释放）此对象的monitor，然后进入等待状态</strong>，等待后续再次获得此对象的锁（Thread类中的<strong>sleep方法使当前线程暂停执行一段时间，从而让其他线程有机会继续执行，但它并不释放对象锁</strong>）；　　</p>
+<p>　　notify()方法能够唤醒一个正在等待该对象的monitor的线程，当有多个线程都在等待该对象的monitor的话，则只能唤醒其中一个线程，具体唤醒哪个线程则不得而知。 同样地，<strong>调用某个对象的notify()方法，当前线程也必须拥有这个对象的monitor</strong>，因此调用notify()方法必须在同步块或者同步方法中进行（synchronized块或者synchronized方法）。</p>
+<p>　　nofityAll()方法能够唤醒所有正在等待该对象的monitor的线程，这一点与notify()方法是不同的。</p>
+<p>　　这里要注意一点：<strong>notify()和notifyAll()方法只是唤醒等待该对象的monitor的线程，并不决定哪个线程能够获取到monitor。</strong></p>
+<p> 　　举个简单的例子：假如有三个线程Thread1、Thread2和Thread3都在等待对象objectA的monitor，此时Thread4拥有对象objectA的monitor，当在Thread4中调用objectA.notify()方法之后，Thread1、Thread2和Thread3只有一个能被唤醒。注意，被唤醒不等于立刻就获取了objectA的monitor。假若在<strong>Thread4中调用objectA.notifyAll()方法，则Thread1、Thread2和Thread3三个线程都会被唤醒</strong>，<strong>至于哪个线程接下来能够获取到objectA的monitor就具体依赖于操作系统的调度了</strong>。</p>
+<p>　　上面尤其要注意一点，一个线程被唤醒不代表立即获取了对象的monitor，只有等调用完notify()或者notifyAll()并退出synchronized块，<strong>释放对象锁后，其余线程才可获得锁执行</strong>。<br>二.ReentrantLock类加锁的线程的Condition类的await()/signal()/signalAll()<br>　　Condition是在java 1.5中才出现的，它用来替代传统的Object的wait()、notify()实现线程间的协作，相比使用Object的wait()、notify()，使用Condition1的await()、signal()这种方式实现线程间协作更加安全和高效。因此通常来说比较推荐使用Condition，在阻塞队列那一篇博文中就讲述到了，阻塞队列实际上是使用了Condition来模拟线程间协作。</p>
+<p>Condition是个接口，基本的方法就是await()和signal()方法；<br>Condition依赖于Lock接口，生成一个Condition的基本代码是lock.newCondition()<br> 调用Condition的await()和signal()方法，都必须在lock保护之内，就是说必须在lock.lock()和lock.unlock之间才可以使用<br>　　Conditon中的await()对应Object的wait()；</p>
+<p>　　Condition中的signal()对应Object的notify()；</p>
+<p>　　Condition中的signalAll()对应Object的notifyAll()。</p>
+<p>###Boolean占几个字节*<br>一个字节，在java规范中没有定义boolean大小，但在jvm规范中定义了。</p>
+<h3 id="jdk1-8-jdk1-7都分别新增了哪些特性"><a href="#jdk1-8-jdk1-7都分别新增了哪些特性" target="_blank" rel="noopener" class="headerlink" title="jdk1.8/jdk1.7都分别新增了哪些特性*"></a>jdk1.8/jdk1.7都分别新增了哪些特性*</h3><p><a href="https://blog.csdn.net/csdnlijingran/article/details/88855000" target="_blank" rel="noopener">https://blog.csdn.net/csdnlijingran/article/details/88855000</a><br>###Exception和Error<br>Exception和Error体现了JAVA这门语言对于异常处理的两种方式。</p>
+<p>Exception是java程序运行中可预料的异常情况，咱们可以获取到这种异常，并且对这种异常进行业务外的处理。</p>
+<p>Error是java程序运行中不可预料的异常情况，这种异常发生以后，会直接导致JVM不可处理或者不可恢复的情况。所以这种异常不可能抓取到，比如OutOfMemoryError、NoClassDefFoundError等。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="2020/03/10/java种种/" target="_blank" rel="noopener">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-数据库种种" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
